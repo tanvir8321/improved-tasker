@@ -1,14 +1,17 @@
 import React from "react";
-import Navbar from "./Navbar";
+import Header from "./Header";
 import Hero from "./Hero";
 import TaskContainer from "./Task/TaskContainer";
 import Footer from "./Footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Page = () => {
   return (
     <>
-      <Navbar />
+      <Header />
+      <ToastContainer />
       <Hero />
-      <TaskContainer />      
+      <TaskContainer />
       <Footer />
     </>
   );

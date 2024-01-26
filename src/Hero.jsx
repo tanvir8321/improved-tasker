@@ -1,4 +1,5 @@
 import React from "react";
+import { getAssetsImage } from "./utilites/taskUtilites";
 
 const Hero = () => {
   return (
@@ -8,7 +9,7 @@ const Hero = () => {
           <div className="flex justify-center md:order-2">
             <img
               className="max-md:w-full"
-              src="./assets/frame.png"
+              src={getAssetsImage("frame.png")}
               width={326}
               height={290}
               alt="frame"

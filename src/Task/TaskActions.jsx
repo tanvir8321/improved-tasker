@@ -1,13 +1,38 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { TaskContext } from "../context";
 import TaskForm from "./TaskForm";
+import { toast } from "react-toastify";
 
 const TaskActions = () => {
   const { state, dispatch } = useContext(TaskContext);
+  const [searchText, setSearchText] = useState("");
 
   const taskToggle = () => {
     dispatch({
       type: "TASK_TOGGLE",
+    });
+  };
+  const allTaskRemove = () => {
+    dispatch({
+      type: "ALL_TASK_REMOVED",
+    });
+    toast.success("All task has been removed!");
+  };
+
+  const onChangeHandler = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    dispatch({
+      type: "TASK_SEARCH",
+      payload: text,
+    });
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    dispatch({
+      type: "TASK_SEARCH",
+      payload: searchText,
     });
   };
 
@@ -16,7 +41,7 @@ const TaskActions = () => {
       <div className="mb-14 items-center justify-between sm:flex">
         <h2 className="text-2xl font-semibold max-sm:mb-4">Your Tasks</h2>
         <div className="flex items-center space-x-5">
-          <form>
+          <form onSubmit={onSubmit}>
             <div className="flex">
               <div className="relative overflow-hidden rounded-lg text-gray-50 md:min-w-[380px] lg:min-w-[440px]">
                 <input
@@ -24,7 +49,7 @@ const TaskActions = () => {
                   id="search-dropdown"
                   className="z-20 block w-full bg-gray-800 px-4 py-2 pr-10 focus:outline-none"
                   placeholder="Search Task"
-                  required=""
+                  onChange={onChangeHandler}
                 />
                 <button
                   type="submit"
@@ -53,12 +78,16 @@ const TaskActions = () => {
             className="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold">
             Add Task
           </button>
-          <button className="rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold">
+          <button
+            onClick={allTaskRemove}
+            className="rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold">
             Delete All
           </button>
         </div>
       </div>
-      {state?.taskModal && <TaskForm taskToggle={taskToggle} state={state} dispatch={dispatch} />}
+      {state?.taskModal && (
+        <TaskForm taskToggle={taskToggle} state={state} dispatch={dispatch} />
+      )}
     </>
   );
 };

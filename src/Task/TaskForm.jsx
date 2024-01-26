@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import TaskFormErrorShow from "./TaskFormErrorShow";
+import { TaskContext } from "../context";
+import { toast } from "react-toastify";
 
-const TaskForm = ({ state, dispatch }) => {
+const TaskForm = () => {
+  const { state, dispatch } = useContext(TaskContext);
   const [formErrors, setFormErrors] = useState({});
+  const editId = state.editTask?.id;
   const [formState, setFormState] = useState({
-    title: "",
-    description: "",
-    tags: "",
-    priority: "",
+    title: state.editTask?.title ?? "",
+    description: state.editTask?.description ?? "",
+    tags: state.editTask?.tags ?? "",
+    priority: state.editTask?.priority ?? "",
   });
+
+  const taskToggle = () => {
+    dispatch({
+      type: "TASK_TOGGLE",
+    });
+  };
 
   const validateField = (fieldName, value) => {
     if (!value.trim()) {
@@ -54,23 +64,29 @@ const TaskForm = ({ state, dispatch }) => {
     validateField(fieldName, value);
   };
 
+  const nextId = state.tasks.length ? state.tasks.length + 1 : 1;
+
   const onSubmit = (e) => {
     e.preventDefault();
 
-    console.log(state);
-
-    if (validateForm()) {
-      console.log(formState);
-
+    if (editId && validateForm()) {
+      const updatedTask = {
+        ...state.editTask,
+        ...formState,
+      };
       dispatch({
-        type: "ADD_TASK",
-        payload: formState,
+        type: "UPDATE_TASK",
+        payload: updatedTask,
       });
-
-      // setTitle("");
-      // setDescription("");
-      // setTags("");
-      // setPriority("");
+      toast.success("Task updated successfully!");
+    } else {
+      if (validateForm()) {
+        dispatch({
+          type: "ADD_TASK",
+          payload: { ...formState, isFavourite: false, id: nextId },
+        });
+        toast.success("Task added successfully!");
+      }
     }
   };
 
@@ -79,7 +95,6 @@ const TaskForm = ({ state, dispatch }) => {
       <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
     );
   }
-  console.log(state);
   return (
     <>
       <div className="bg-black bg-opacity-70 h-full w-full z-100 absolute top-0 left-0"></div>
@@ -87,7 +102,7 @@ const TaskForm = ({ state, dispatch }) => {
         className="mx-auto my-10 w-full max-w-[740px] rounded-xl border border-[#FEFBFB]/[36%] bg-[#191D26] p-9 max-md:px-4 lg:my-0 lg:p-11 absolute z-100 top-1/4 left-1/3"
         onSubmit={onSubmit}>
         <h2 className="mb-9 text-center text-2xl font-bold text-white lg:mb-11 lg:text-[28px]">
-          Add New Task
+          {editId ? "Update" : "Add New"} Task
         </h2>
         {/* inputs */}
         <div className="space-y-9 text-white lg:space-y-10">
@@ -149,9 +164,15 @@ const TaskForm = ({ state, dispatch }) => {
         {/* inputs ends */}
         <div className="mt-16 flex justify-center lg:mt-20">
           <button
+            onClick={taskToggle}
+            type="button"
+            className="rounded bg-red-600 px-4 py-2 text-white transition-all hover:opacity-80 mr-2">
+            Close
+          </button>
+          <button
             type="submit"
             className="rounded bg-blue-600 px-4 py-2 text-white transition-all hover:opacity-80">
-            Create new Task
+            {editId ? "Update" : "Create new"} Task
           </button>
         </div>
       </form>
