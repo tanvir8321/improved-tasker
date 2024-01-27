@@ -64,7 +64,9 @@ const TaskForm = () => {
     validateField(fieldName, value);
   };
 
-  const nextId = state.tasks.length ? state.tasks.length + 1 : 1;
+  const nextId = state.tasks.length
+    ? state.tasks.reduce((prev, curr) => (prev.id > curr.id ? prev : curr)).id
+    : 0;
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -83,7 +85,7 @@ const TaskForm = () => {
       if (validateForm()) {
         dispatch({
           type: "ADD_TASK",
-          payload: { ...formState, isFavourite: false, id: nextId },
+          payload: { ...formState, isFavourite: false, id: nextId + 1 },
         });
         toast.success("Task added successfully!");
       }
